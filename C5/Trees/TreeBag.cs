@@ -23,8 +23,8 @@ namespace C5
     {
         #region Fields
 
-        private SCG.IComparer<T>? comparer;
-        private Node? root;
+        private SCG.IComparer<T> comparer;
+        private Node root;
 
         //TODO: wonder if we should remove that
         private int blackdepth = 0;
@@ -36,15 +36,15 @@ namespace C5
 
         //We double these stacks for the iterative add and remove on demand
         //TODO: refactor dirs[] into bool fields on Node (?)
-        private int[]? dirs = new int[2];
+        private int[] dirs = new int[2];
 
-        private Node?[]? path = new Node[2];
+        private Node[] path = new Node[2];
 
         //TODO: refactor into separate class
         private bool isSnapShot = false;
         private int generation;
         private bool isValid = true;
-        private SnapRef? snapList;
+        private SnapRef snapList;
 
         #endregion
 
@@ -72,7 +72,7 @@ namespace C5
 
                 if (n.lastgeneration >= generation && n.leftnode)
                 {
-                    return n.oldref!;
+                    return n.oldref;
                 }
             }
             return n.left;
@@ -86,10 +86,10 @@ namespace C5
 
                 if (n.lastgeneration >= generation && !n.leftnode)
                 {
-                    return n.oldref!;
+                    return n.oldref;
                 }
             }
-            return n.right!;
+            return n.right;
         }
 
 
@@ -97,7 +97,7 @@ namespace C5
         //traversal stack, unless certain that there is room enough
         private void StackCheck()
         {
-            while (dirs!.Length < 2 * blackdepth)
+            while (dirs.Length < 2 * blackdepth)
             {
                 dirs = new int[2 * dirs.Length];
                 path = new Node[2 * dirs.Length];
@@ -121,7 +121,7 @@ namespace C5
 
             public Node left;
 
-            public Node? right;
+            public Node right;
 
             public int size = 1;
 
@@ -133,7 +133,7 @@ namespace C5
 
             public int lastgeneration = -1;
 
-            public Node? oldref;
+            public Node oldref;
 
             public bool leftnode;
 
@@ -148,7 +148,7 @@ namespace C5
             /// <returns>True if node was *copied*</returns>
             internal static bool Update(ref Node cursor, bool leftnode, Node child, int maxsnapid, int generation)
             {
-                Node oldref = (leftnode ? cursor.left : cursor.right)!;
+                Node oldref = leftnode ? cursor.left : cursor.right;
 
                 if (child == oldref)
                 {
@@ -163,7 +163,7 @@ namespace C5
                     {
                         cursor.leftnode = leftnode;
                         cursor.lastgeneration = maxsnapid;
-                        cursor.oldref = oldref!;
+                        cursor.oldref = oldref;
                     }
                     else if (cursor.leftnode != leftnode || cursor.lastgeneration < maxsnapid)
                     {
@@ -261,8 +261,8 @@ namespace C5
             private bool valid = false;
             private readonly int stamp;
             private T current;
-            private Node? cursor;
-            private Node[]? path; // stack of nodes
+            private Node cursor;
+            private Node[] path; // stack of nodes
 
             private int level = 0;
             #endregion
@@ -316,9 +316,9 @@ namespace C5
             public bool MoveNext()
             {
                 tree.ModifyCheck(stamp);
-                if (cursor!.right != null)
+                if (cursor.right != null)
                 {
-                    path![level] = cursor = cursor.right;
+                    path[level] = cursor = cursor.right;
                     while (cursor.left != null)
                     {
                         path[++level] = cursor = cursor.left;
@@ -330,7 +330,7 @@ namespace C5
                 }
                 else
                 {
-                    cursor = path![--level];
+                    cursor = path[--level];
                 }
 
                 current = cursor.item;
@@ -386,7 +386,7 @@ namespace C5
 
             #region IEnumerator Members
 
-            object System.Collections.IEnumerator.Current => Current!;
+            object System.Collections.IEnumerator.Current => Current;
 
             bool System.Collections.IEnumerator.MoveNext()
             {
@@ -409,13 +409,13 @@ namespace C5
         internal class SnapEnumerator : SCG.IEnumerator<T>
         {
             #region Private Fields
-            private TreeBag<T>? tree;
+            private TreeBag<T> tree;
             private bool valid = false;
             private readonly int stamp;
             private int togo;
             private T current;
-            private Node? cursor;
-            private Node[]? path; // stack of nodes
+            private Node cursor;
+            private Node[] path; // stack of nodes
 
             private int level;
             #endregion
@@ -447,7 +447,7 @@ namespace C5
             /// <returns>True if enumerator is valid now</returns>
             public bool MoveNext()
             {
-                tree!.ModifyCheck(stamp);//???
+                tree.ModifyCheck(stamp);//???
 
 
                 if (--togo > 0)
@@ -455,11 +455,11 @@ namespace C5
                     return true;
                 }
 
-                Node next = tree.Right(cursor!);
+                Node next = tree.Right(cursor);
 
                 if (next != null)
                 {
-                    path![level] = cursor = next;
+                    path[level] = cursor = next;
                     next = tree.Left(cursor);
                     while (next != null)
                     {
@@ -473,7 +473,7 @@ namespace C5
                 }
                 else
                 {
-                    cursor = path![--level];
+                    cursor = path[--level];
                 }
 
                 togo = cursor.items;
@@ -519,7 +519,7 @@ namespace C5
 
             #region IEnumerator Members
 
-            object System.Collections.IEnumerator.Current => Current!;
+            object System.Collections.IEnumerator.Current => Current;
 
             bool System.Collections.IEnumerator.MoveNext()
             {
@@ -592,7 +592,7 @@ namespace C5
                 throw new NoSuchItemException();
             }
 
-            return root!.item;
+            return root.item;
         }
 
 
@@ -612,7 +612,7 @@ namespace C5
                 return new SnapEnumerator(this);
             }
 
-            return GetEnumerator(root!, stamp);
+            return GetEnumerator(root, stamp);
 
         }
 
@@ -650,7 +650,7 @@ namespace C5
 
             while (true)
             {
-                int comp = comparer!.Compare(cursor.item, item);
+                int comp = comparer.Compare(cursor.item, item);
 
                 if (comp == 0)
                 {
@@ -676,8 +676,8 @@ namespace C5
                         {
                             Node kid = cursor;
 
-                            cursor = path![level]!;
-                            Node.Update(ref cursor!, dirs![level] > 0, kid, MaxSnapId, generation);
+                            cursor = path[level];
+                            Node.Update(ref cursor, dirs[level] > 0, kid, MaxSnapId, generation);
 
                             if (!update)
                             {
@@ -685,7 +685,7 @@ namespace C5
                             }
                         }
 
-                        path![level] = null;
+                        path[level] = null;
                     }
 
                     // bug20120422: the root was never updated because this was missing:
@@ -696,7 +696,7 @@ namespace C5
                 }
 
                 //else
-                Node child = (comp > 0 ? cursor.left : cursor.right)!;
+                Node child = comp > 0 ? cursor.left : cursor.right;
 
                 if (child == null)
                 {
@@ -710,13 +710,13 @@ namespace C5
 
                     cursor.size++;
 
-                    dirs![level] = comp;
+                    dirs[level] = comp;
                     break;
                 }
                 else
                 {
-                    dirs![level] = comp;
-                    path![level++] = cursor;
+                    dirs[level] = comp;
+                    path[level++] = cursor;
                     cursor = child;
                 }
             }
@@ -727,14 +727,14 @@ namespace C5
                 //take one step up:
                 Node child = cursor;
 
-                cursor = path![--level]!;
+                cursor = path[--level];
                 path[level] = null;
-                Node.Update(ref cursor!, dirs[level] > 0, child, MaxSnapId, generation);
+                Node.Update(ref cursor, dirs[level] > 0, child, MaxSnapId, generation);
 
                 cursor.size++;
 
                 int comp = dirs[level];
-                Node childsibling = (comp > 0 ? cursor.right : cursor.left)!;
+                Node childsibling = comp > 0 ? cursor.right : cursor.left;
 
                 if (childsibling != null && childsibling.red)
                 {
@@ -754,8 +754,8 @@ namespace C5
                     {
                         cursor.red = true;
                         child = cursor;
-                        cursor = path[--level]!;
-                        Node.Update(ref cursor!, dirs[level] > 0, child, MaxSnapId, generation);
+                        cursor = path[--level];
+                        Node.Update(ref cursor, dirs[level] > 0, child, MaxSnapId, generation);
                         path[level] = null;
 
                         cursor.size++;
@@ -772,15 +772,15 @@ namespace C5
                     {
                         if (childcomp > 0)
                         {//zagzag
-                            Node.Update(ref cursor, true, child.right!, MaxSnapId, generation);
+                            Node.Update(ref cursor, true, child.right, MaxSnapId, generation);
                             Node.Update(ref child, false, cursor, MaxSnapId, generation);
 
                             cursor = child;
                         }
                         else
                         {//zagzig
-                            Node badgrandchild = child.right!;
-                            Node.Update(ref cursor, true, badgrandchild.right!, MaxSnapId, generation);
+                            Node badgrandchild = child.right;
+                            Node.Update(ref cursor, true, badgrandchild.right, MaxSnapId, generation);
                             Node.Update(ref child, false, badgrandchild.left, MaxSnapId, generation);
                             Node.CopyNode(ref badgrandchild, MaxSnapId, generation);
 
@@ -802,7 +802,7 @@ namespace C5
                         {//zigzag
                             Node badgrandchild = child.left;
                             Node.Update(ref cursor, false, badgrandchild.left, MaxSnapId, generation);
-                            Node.Update(ref child, true, badgrandchild.right!, MaxSnapId, generation);
+                            Node.Update(ref child, true, badgrandchild.right, MaxSnapId, generation);
                             Node.CopyNode(ref badgrandchild, MaxSnapId, generation);
 
                             badgrandchild.right = child;
@@ -815,7 +815,7 @@ namespace C5
 
                     Node n;
 
-                    n = cursor.right!;
+                    n = cursor.right;
                     cursor.size = n.size = (n.left == null ? 0 : n.left.size) + (n.right == null ? 0 : n.right.size) + n.items;
                     n = cursor.left;
                     n.size = (n.left == null ? 0 : n.left.size) + (n.right == null ? 0 : n.right.size) + n.items;
@@ -829,9 +829,9 @@ namespace C5
                     else
                     {
                         child = cursor;
-                        cursor = path![--level]!;
+                        cursor = path[--level];
                         path[level] = null;
-                        Node.Update(ref cursor!, dirs[level] > 0, child, MaxSnapId, generation);
+                        Node.Update(ref cursor, dirs[level] > 0, child, MaxSnapId, generation);
 
 
                         cursor.size++;
@@ -844,7 +844,7 @@ namespace C5
             {
                 Node child = cursor;
 
-                cursor = path![--level]!;
+                cursor = path[--level];
                 path[level] = null;
                 if (stillmore)
                 {
@@ -941,7 +941,7 @@ namespace C5
             T j = default;
 
             bool raiseAdded = (ActiveEvents & EventType.Added) != 0;
-            CircularQueue<T>? wasAdded = raiseAdded ? new CircularQueue<T>() : null;
+            CircularQueue<T> wasAdded = raiseAdded ? new CircularQueue<T>() : null;
 
             foreach (T i in items)
             {
@@ -955,7 +955,7 @@ namespace C5
 
                     if (raiseAdded)
                     {
-                        wasAdded!.Enqueue(wasfound ? j : i);
+                        wasAdded.Enqueue(wasfound ? j : i);
                     }
                 }
             }
@@ -971,7 +971,7 @@ namespace C5
             //TODO: implement a RaiseForAddAll() method
             if (raiseAdded)
             {
-                foreach (T item in wasAdded!)
+                foreach (T item in wasAdded)
                 {
                     RaiseItemsAdded(item, 1);
                 }
@@ -1022,16 +1022,16 @@ namespace C5
             {
                 Node top = rest;
 
-                rest = rest.right!;
+                rest = rest.right;
                 if (red > 0)
                 {
                     top.right = null;
-                    rest!.left = top;
+                    rest.left = top;
                     top = rest;
 
                     top.size += top.left.size;
 
-                    rest = rest.right!;
+                    rest = rest.right;
                     red--;
                 }
 
@@ -1041,7 +1041,7 @@ namespace C5
                     top.size += rest.size;
 
                     top.right = rest;
-                    rest = rest.right!;
+                    rest = rest.right;
                     top.right.right = null;
                 }
                 else
@@ -1060,7 +1060,7 @@ namespace C5
                 Node left = MakeTreer(ref rest, blackheight - 1, maxred, lred);
                 Node top = rest;
 
-                rest = rest.right!;
+                rest = rest.right;
                 top.left = left;
                 top.red = false;
                 top.right = MakeTreer(ref rest, blackheight - 1, maxred, red - lred);
@@ -1095,7 +1095,7 @@ namespace C5
             {
 
                 T thisitem = e.Current;
-                int comp = comparer!.Compare(lastitem, thisitem);
+                int comp = comparer.Compare(lastitem, thisitem);
                 if (comp > 0)
                 {
                     throw new ArgumentException("Argument not sorted");
@@ -1200,10 +1200,10 @@ namespace C5
             }
 
             Node next;
-            next = root!;
+            next = root;
             while (next != null)
             {
-                int comp = comparer!.Compare(next.item, item);
+                int comp = comparer.Compare(next.item, item);
                 if (comp == 0)
                 {
                     return true;
@@ -1233,10 +1233,10 @@ namespace C5
             }
 
             Node next;
-            next = root!;
+            next = root;
             while (next != null)
             {
-                int comp = comparer!.Compare(next.item, item);
+                int comp = comparer.Compare(next.item, item);
                 if (comp == 0)
                 {
                     item = next.item;
@@ -1327,10 +1327,10 @@ namespace C5
             StackCheck();
 
             int level = 0;
-            Node cursor = root!;
+            Node cursor = root;
             while (cursor != null)
             {
-                int comp = comparer!.Compare(cursor.item, item);
+                int comp = comparer.Compare(cursor.item, item);
                 if (comp == 0)
                 {
                     Node.CopyNode(ref cursor, MaxSnapId, generation);
@@ -1343,9 +1343,9 @@ namespace C5
                     {
                         Node child = cursor;
 
-                        cursor = path![--level]!;
+                        cursor = path[--level];
                         path[level] = null;
-                        Node.Update(ref cursor, dirs![level] > 0, child, MaxSnapId, generation);
+                        Node.Update(ref cursor, dirs[level] > 0, child, MaxSnapId, generation);
 
                     }
 
@@ -1358,9 +1358,9 @@ namespace C5
 
                     return true;
                 }
-                dirs![level] = comp;
-                path![level++] = cursor;
-                cursor = (comp < 0 ? cursor.right : cursor.left)!;
+                dirs[level] = comp;
+                path[level++] = cursor;
+                cursor = comp < 0 ? cursor.right : cursor.left;
             }
 
             olditem = default;
@@ -1503,11 +1503,11 @@ namespace C5
             StackCheck();
 
             int level = 0, comp;
-            Node cursor = root!;
+            Node cursor = root;
 
             while (true)
             {
-                comp = comparer!.Compare(cursor.item, item);
+                comp = comparer.Compare(cursor.item, item);
                 if (comp == 0)
                 {
                     item = cursor.item;
@@ -1521,8 +1521,8 @@ namespace C5
                         {
                             Node kid = cursor;
 
-                            cursor = path![level]!;
-                            Node.Update(ref cursor!, dirs![level] > 0, kid, MaxSnapId, generation);
+                            cursor = path[level];
+                            Node.Update(ref cursor, dirs[level] > 0, kid, MaxSnapId, generation);
                             cursor.size--;
                             path[level] = null;
                         }
@@ -1535,15 +1535,15 @@ namespace C5
                     break;
                 }
 
-                Node child = (comp > 0 ? cursor.left : cursor.right)!;
+                Node child = comp > 0 ? cursor.left : cursor.right;
 
                 if (child == null)
                 {
                     return false;
                 }
 
-                dirs![level] = comp;
-                path![level++] = cursor;
+                dirs[level] = comp;
+                path[level++] = cursor;
                 cursor = child;
             }
 
@@ -1567,8 +1567,8 @@ namespace C5
 
             if (cursor.left != null && cursor.right != null)
             {
-                dirs![level] = 1;
-                path![level++] = cursor;
+                dirs[level] = 1;
+                path[level++] = cursor;
                 cursor = cursor.left;
                 while (cursor.right != null)
                 {
@@ -1576,15 +1576,15 @@ namespace C5
                     path[level++] = cursor;
                     cursor = cursor.right;
                 }
-                Node.CopyNode(ref path[level_of_item]!, MaxSnapId, generation);
-                path[level_of_item]!.item = cursor.item;
+                Node.CopyNode(ref path[level_of_item], MaxSnapId, generation);
+                path[level_of_item].item = cursor.item;
 
-                path[level_of_item]!.items = cursor.items;
+                path[level_of_item].items = cursor.items;
 
             }
 
             //Stage 3: splice out node to be removed
-            Node newchild = (cursor.right ?? cursor.left)!;
+            Node newchild = cursor.right ?? cursor.left;
             bool demote_or_rotate = newchild == null && !cursor.red;
 
             //assert newchild.red 
@@ -1595,29 +1595,29 @@ namespace C5
 
             if (level == 0)
             {
-                root = newchild!;
+                root = newchild;
                 return true;
             }
 
             level--;
-            cursor = path![level]!;
+            cursor = path[level];
             path[level] = null;
 
-            int comp = dirs![level];
+            int comp = dirs[level];
             Node childsibling;
-            Node.Update(ref cursor!, comp > 0, newchild!, MaxSnapId, generation);
+            Node.Update(ref cursor, comp > 0, newchild, MaxSnapId, generation);
 
-            childsibling = (comp > 0 ? cursor.right : cursor.left)!;
+            childsibling = comp > 0 ? cursor.right : cursor.left;
 
             cursor.size = cursor.items + (newchild == null ? 0 : newchild.size) + (childsibling == null ? 0 : childsibling.size);
 
 
             //Stage 4: demote till we must rotate
-            Node? farnephew = null, nearnephew = null;
+            Node farnephew = null, nearnephew = null;
 
             while (demote_or_rotate)
             {
-                if (childsibling!.red)
+                if (childsibling.red)
                 {
                     break; //rotate 2+?
                 }
@@ -1653,10 +1653,10 @@ namespace C5
                 {
                     Node child = cursor;
 
-                    cursor = path[--level]!;
+                    cursor = path[--level];
                     path[level] = null;
                     comp = dirs[level];
-                    childsibling = (comp > 0 ? cursor.right : cursor.left)!;
+                    childsibling = comp > 0 ? cursor.right : cursor.left;
                     Node.Update(ref cursor, comp > 0, child, MaxSnapId, generation);
 
                     cursor.size = cursor.items + (child == null ? 0 : child.size) + (childsibling == null ? 0 : childsibling.size);
@@ -1673,7 +1673,7 @@ namespace C5
                 //cursor is always the top of the subtree
                 Node parent = cursor;
 
-                if (childsibling!.red)
+                if (childsibling.red)
                 {//Case 2 and perhaps more. 
                     //The y.rank == px.rank >= x.rank+2 >=2 so both nephews are != null 
                     //(and black). The grandnephews are children of nearnephew
@@ -1684,22 +1684,22 @@ namespace C5
                         nearnephew = childsibling.left;
                         farnephew = childsibling.right;
                         neargrandnephew = nearnephew.left;
-                        fargrandnephew = nearnephew.right!;
+                        fargrandnephew = nearnephew.right;
                     }
                     else
                     {
                         nearnephew = childsibling.right;
                         farnephew = childsibling.left;
-                        neargrandnephew = nearnephew!.right!;
+                        neargrandnephew = nearnephew.right;
                         fargrandnephew = nearnephew.left;
                     }
 
                     if (fargrandnephew != null && fargrandnephew.red)
                     {//Case 2+1b
-                        Node.CopyNode(ref nearnephew!, MaxSnapId, generation);
+                        Node.CopyNode(ref nearnephew, MaxSnapId, generation);
 
                         //The end result of this will always be e copy of parent
-                        Node.Update(ref parent, comp < 0, neargrandnephew!, MaxSnapId, generation);
+                        Node.Update(ref parent, comp < 0, neargrandnephew, MaxSnapId, generation);
                         Node.Update(ref childsibling, comp > 0, nearnephew, MaxSnapId, generation);
                         if (comp > 0)
                         {
@@ -1709,7 +1709,7 @@ namespace C5
                         else
                         {
                             nearnephew.right = parent;
-                            parent.left = neargrandnephew!;
+                            parent.left = neargrandnephew;
                         }
 
                         cursor = childsibling;
@@ -1718,7 +1718,7 @@ namespace C5
                         fargrandnephew.red = false;
 
                         cursor.size = parent.size;
-                        nearnephew.size = cursor.size - cursor.items - farnephew!.size;
+                        nearnephew.size = cursor.size - cursor.items - farnephew.size;
                         parent.size = nearnephew.size - nearnephew.items - fargrandnephew.size;
 
                     }
@@ -1728,7 +1728,7 @@ namespace C5
                         if (comp > 0)
                         {
                             Node.Update(ref childsibling, true, neargrandnephew, MaxSnapId, generation);
-                            Node.Update(ref nearnephew!, true, neargrandnephew.right!, MaxSnapId, generation);
+                            Node.Update(ref nearnephew, true, neargrandnephew.right, MaxSnapId, generation);
                             Node.Update(ref parent, false, neargrandnephew.left, MaxSnapId, generation);
                             neargrandnephew.left = parent;
                             neargrandnephew.right = nearnephew;
@@ -1736,8 +1736,8 @@ namespace C5
                         else
                         {
                             Node.Update(ref childsibling, false, neargrandnephew, MaxSnapId, generation);
-                            Node.Update(ref nearnephew!, false, neargrandnephew.left, MaxSnapId, generation);
-                            Node.Update(ref parent, true, neargrandnephew.right!, MaxSnapId, generation);
+                            Node.Update(ref nearnephew, false, neargrandnephew.left, MaxSnapId, generation);
+                            Node.Update(ref parent, true, neargrandnephew.right, MaxSnapId, generation);
                             neargrandnephew.right = parent;
                             neargrandnephew.left = nearnephew;
                         }
@@ -1761,14 +1761,14 @@ namespace C5
                         nearnephew.red = true;
 
                         cursor.size = parent.size;
-                        parent.size -= farnephew!.size + cursor.items;
+                        parent.size -= farnephew.size + cursor.items;
 
                     }
                 }
                 else if (farnephew != null && farnephew.red)
                 {//Case 1b
                     nearnephew = comp > 0 ? childsibling.left : childsibling.right;
-                    Node.Update(ref parent, comp < 0, nearnephew!, MaxSnapId, generation);
+                    Node.Update(ref parent, comp < 0, nearnephew, MaxSnapId, generation);
                     Node.CopyNode(ref childsibling, MaxSnapId, generation);
                     if (comp > 0)
                     {
@@ -1793,10 +1793,10 @@ namespace C5
                 }
                 else if (nearnephew != null && nearnephew.red)
                 {//Case 1c
-                    Node.CopyNode(ref nearnephew!, MaxSnapId, generation);
+                    Node.CopyNode(ref nearnephew, MaxSnapId, generation);
                     if (comp > 0)
                     {
-                        Node.Update(ref childsibling, true, nearnephew.right!, MaxSnapId, generation);
+                        Node.Update(ref childsibling, true, nearnephew.right, MaxSnapId, generation);
                         Node.Update(ref parent, false, nearnephew.left, MaxSnapId, generation);
 
                         nearnephew.left = parent;
@@ -1805,7 +1805,7 @@ namespace C5
                     else
                     {
                         Node.Update(ref childsibling, false, nearnephew.left, MaxSnapId, generation);
-                        Node.Update(ref parent, true, nearnephew.right!, MaxSnapId, generation);
+                        Node.Update(ref parent, true, nearnephew.right, MaxSnapId, generation);
 
                         nearnephew.right = parent;
                         nearnephew.left = childsibling;
@@ -1834,9 +1834,9 @@ namespace C5
                 {
                     Node swap = cursor;
 
-                    cursor = path![--level]!;
+                    cursor = path[--level];
                     path[level] = null;
-                    Node.Update(ref cursor!, dirs[level] > 0, swap, MaxSnapId, generation);
+                    Node.Update(ref cursor, dirs[level] > 0, swap, MaxSnapId, generation);
 
 
                     cursor.size = cursor.items + (cursor.right == null ? 0 : cursor.right.size) + (cursor.left == null ? 0 : cursor.left.size);
@@ -1849,7 +1849,7 @@ namespace C5
             {
                 Node child = cursor;
 
-                cursor = path![--level]!;
+                cursor = path[--level];
                 path[level] = null;
                 if (child != (dirs[level] > 0 ? cursor.left : cursor.right))
                 {
@@ -1919,7 +1919,7 @@ namespace C5
             T jtem;
 
             bool mustRaise = (ActiveEvents & (EventType.Removed | EventType.Changed)) != 0;
-            RaiseForRemoveAllHandler? raiseHandler = mustRaise ? new RaiseForRemoveAllHandler(this) : null;
+            RaiseForRemoveAllHandler raiseHandler = mustRaise ? new RaiseForRemoveAllHandler(this) : null;
 
             foreach (T item in items)
             {
@@ -1931,12 +1931,12 @@ namespace C5
                 jtem = item;
                 if (RemoveIterative(ref jtem, false, out int junk) && mustRaise)
                 {
-                    raiseHandler!.Remove(jtem);
+                    raiseHandler.Remove(jtem);
                 }
             }
             if (mustRaise)
             {
-                raiseHandler!.Raise();
+                raiseHandler.Raise();
             }
         }
 
@@ -1976,7 +1976,7 @@ namespace C5
             }
 
 #warning improve (mainly for bag) by using a Node iterator instead of ItemMultiplicities()
-            CircularQueue<System.Collections.Generic.KeyValuePair<T, int>>? wasRemoved = null;
+            CircularQueue<System.Collections.Generic.KeyValuePair<T, int>> wasRemoved = null;
             if ((ActiveEvents & EventType.Removed) != 0)
             {
                 wasRemoved = new CircularQueue<System.Collections.Generic.KeyValuePair<T, int>>();
@@ -1986,7 +1986,7 @@ namespace C5
                     //We know p.Key is in this!
                     while (ie.MoveNext())
                     {
-                        if (comparer!.Compare(ie.Current.Key, p.Key) == 0)
+                        if (comparer.Compare(ie.Current.Key, p.Key) == 0)
                         {
 
                             int removed = ie.Current.Value - p.Value;
@@ -2069,9 +2069,9 @@ namespace C5
                 throw new ViewDisposedException("Snapshot has been disposed");
             }
 
-            TreeBag<T> res = new TreeBag<T>(comparer!);
+            TreeBag<T> res = new TreeBag<T>(comparer);
             SCG.IEnumerator<T> e = GetEnumerator();
-            Node? head = null, tail = null;
+            Node head = null, tail = null;
             int z = 0;
 
             int ec = 0;
@@ -2082,7 +2082,7 @@ namespace C5
 
                 //We could document that filter will only be called 
                 //once on each unique item. That might even be good for the user!
-                if (tail != null && comparer!.Compare(thisitem, tail.item) == 0)
+                if (tail != null && comparer.Compare(thisitem, tail.item) == 0)
                 {
                     tail.items++;
                     ec++;
@@ -2098,7 +2098,7 @@ namespace C5
                     else
                     {
 
-                        tail!.size = tail.items;
+                        tail.size = tail.items;
                         tail.right = new Node();
                         tail = tail.right;
                     }
@@ -2127,7 +2127,7 @@ namespace C5
                 blackheight++;
             }
 
-            res.root = MakeTreer(ref head!, blackheight, maxred, red);
+            res.root = MakeTreer(ref head, blackheight, maxred, red);
             res.blackdepth = blackheight;
             res.size = z;
             res.UniqueCount = z;
@@ -2162,7 +2162,7 @@ namespace C5
             }
 
             SCG.IEnumerator<T> e = GetEnumerator();
-            TreeBag<V>.Node? head = null, tail = null;
+            TreeBag<V>.Node head = null, tail = null;
             V oldv = default;
             int z = 0;
 
@@ -2174,7 +2174,7 @@ namespace C5
 
                 //We could document that mapper will only be called 
                 //once on each unique item. That might even be good for the user!
-                if (tail != null && comparer!.Compare(thisitem, lastitem) == 0)
+                if (tail != null && comparer.Compare(thisitem, lastitem) == 0)
                 {
                     tail.items++;
                     continue;
@@ -2193,7 +2193,7 @@ namespace C5
 
                     if (comp == 0)
                     {
-                        tail!.items++;
+                        tail.items++;
                         continue;
                     }
                     if (comp > 0)
@@ -2201,7 +2201,7 @@ namespace C5
                         throw new ArgumentException("mapper not monotonic");
                     }
 
-                    tail!.size = tail.items;
+                    tail.size = tail.items;
 
                     tail.right = new TreeBag<V>.Node();
                     tail = tail.right;
@@ -2214,7 +2214,7 @@ namespace C5
             }
 
 
-            tail!.size = tail.items;
+            tail.size = tail.items;
 
 
             int blackheight = 0, red = z, maxred = 1;
@@ -2226,7 +2226,7 @@ namespace C5
                 blackheight++;
             }
 
-            res.root = TreeBag<V>.MakeTreer(ref head!, blackheight, maxred, red);
+            res.root = TreeBag<V>.MakeTreer(ref head, blackheight, maxred, red);
             res.blackdepth = blackheight;
             res.size = size;
             res.UniqueCount = UniqueCount;
@@ -2249,10 +2249,10 @@ namespace C5
             }
 
             Node next;
-            next = root!;
+            next = root;
             while (next != null)
             {
-                int comp = comparer!.Compare(next.item, item);
+                int comp = comparer.Compare(next.item, item);
                 if (comp == 0)
                 {
                     return next.items;
@@ -2273,11 +2273,11 @@ namespace C5
             private readonly TreeBag<T> treebag;
             private readonly int origstamp;
             internal Multiplicities(TreeBag<T> treebag) { this.treebag = treebag; origstamp = treebag.stamp; }
-            public override System.Collections.Generic.KeyValuePair<T, int> Choose() { return new System.Collections.Generic.KeyValuePair<T, int>(treebag.root!.item, treebag.root.items); }
+            public override System.Collections.Generic.KeyValuePair<T, int> Choose() { return new System.Collections.Generic.KeyValuePair<T, int>(treebag.root.item, treebag.root.items); }
 
             public override SCG.IEnumerator<System.Collections.Generic.KeyValuePair<T, int>> GetEnumerator()
             {
-                return GetEnumerator(treebag.root!, origstamp); //TODO: NBNBNB
+                return GetEnumerator(treebag.root, origstamp); //TODO: NBNBNB
             }
 
             private SCG.IEnumerator<System.Collections.Generic.KeyValuePair<T, int>> GetEnumerator(Node node, int origstamp)
@@ -2379,13 +2379,13 @@ namespace C5
                 throw new NotSupportedException("Indexing not supported for snapshots");
             }
 
-            Node? next = root;
+            Node next = root;
 
             if (i >= 0 && i < size)
             {
                 while (true)
                 {
-                    int j = next!.left == null ? 0 : next.left.size;
+                    int j = next.left == null ? 0 : next.left.size;
 
                     if (i > j)
                     {
@@ -2396,7 +2396,7 @@ namespace C5
                             return next;
                         }
 
-                        next = next.right!;
+                        next = next.right;
                     }
                     else if (i == j)
                     {
@@ -2404,7 +2404,7 @@ namespace C5
                     }
                     else
                     {
-                        next = next.left!;
+                        next = next.left;
                     }
                 }
             }
@@ -2455,11 +2455,11 @@ namespace C5
                 throw new NotSupportedException("Indexing not supported for snapshots");
             }
 
-            int ind = 0; Node? next = root;
+            int ind = 0; Node next = root;
 
             while (next != null)
             {
-                int comp = comparer!.Compare(item, next.item);
+                int comp = comparer.Compare(item, next.item);
 
                 if (comp < 0)
                 {
@@ -2550,18 +2550,18 @@ namespace C5
             }
 
             //We must follow the pattern of removeIterative()
-            while (dirs!.Length < 2 * blackdepth)
+            while (dirs.Length < 2 * blackdepth)
             {
                 dirs = new int[2 * dirs.Length];
                 path = new Node[2 * dirs.Length];
             }
 
             int level = 0;
-            Node? cursor = root;
+            Node cursor = root;
 
             while (true)
             {
-                int j = cursor!.left == null ? 0 : cursor.left.size;
+                int j = cursor.left == null ? 0 : cursor.left.size;
 
                 if (i > j)
                 {
@@ -2573,7 +2573,7 @@ namespace C5
                     }
 
                     dirs[level] = -1;
-                    path![level++] = cursor;
+                    path[level++] = cursor;
                     cursor = cursor.right;
                 }
                 else if (i == j)
@@ -2583,7 +2583,7 @@ namespace C5
                 else
                 {
                     dirs[level] = 1;
-                    path![level++] = cursor;
+                    path[level++] = cursor;
                     cursor = cursor.left;
                 }
             }
@@ -2613,8 +2613,8 @@ namespace C5
             {
                 Node kid = cursor;
 
-                cursor = path![level]!;
-                Node.Update(ref cursor!, dirs![level] > 0, kid, MaxSnapId, generation);
+                cursor = path[level];
+                Node.Update(ref cursor, dirs[level] > 0, kid, MaxSnapId, generation);
                 cursor.size--;
                 path[level] = null;
             }
@@ -2726,7 +2726,7 @@ namespace C5
 
                 int togo;
 
-                Node cursor = tree.root!;
+                Node cursor = tree.root;
                 Node[] path = new Node[2 * tree.blackdepth];
                 int level = 0, totaltogo = length;
 
@@ -2741,7 +2741,7 @@ namespace C5
 
                     while (true)
                     {
-                        int j = cursor!.left == null ? 0 : cursor.left.size;
+                        int j = cursor.left == null ? 0 : cursor.left.size;
 
                         if (i > j)
                         {
@@ -2753,7 +2753,7 @@ namespace C5
                             }
                             i -= j + cursor.items;
 
-                            cursor = cursor.right!;
+                            cursor = cursor.right;
                         }
                         else if (i == j)
                         {
@@ -2765,7 +2765,7 @@ namespace C5
                         else
                         {
                             path[level++] = cursor;
-                            cursor = cursor.left!;
+                            cursor = cursor.left;
                         }
                     }
 
@@ -2809,7 +2809,7 @@ namespace C5
 
                     while (true)
                     {
-                        int j = cursor!.left == null ? 0 : cursor.left.size;
+                        int j = cursor.left == null ? 0 : cursor.left.size;
 
                         if (i > j)
                         {
@@ -2821,7 +2821,7 @@ namespace C5
                             i -= j + cursor.items;
 
                             path[level++] = cursor;
-                            cursor = cursor.right!;
+                            cursor = cursor.right;
                         }
                         else if (i == j)
                         {
@@ -2832,7 +2832,7 @@ namespace C5
                         }
                         else // i <= j, end point tree[start+count-1] is in left subtree
                         {
-                            cursor = cursor.left!;
+                            cursor = cursor.left;
                         }
                     }
 
@@ -2907,7 +2907,7 @@ namespace C5
         /// The comparer object supplied at creation time for this collection
         /// </summary>
         /// <value>The comparer</value>
-        public SCG.IComparer<T> Comparer => comparer!;
+        public SCG.IComparer<T> Comparer => comparer;
 
 
         /// <summary>
@@ -2926,7 +2926,7 @@ namespace C5
                 throw new NoSuchItemException();
             }
 
-            Node? cursor = root, next = Left(cursor!);
+            Node cursor = root, next = Left(cursor);
 
             while (next != null)
             {
@@ -2934,7 +2934,7 @@ namespace C5
                 next = Left(cursor);
             }
 
-            return cursor!.item;
+            return cursor.item;
         }
 
 
@@ -2972,12 +2972,12 @@ namespace C5
         private T DeleteMinInner()
         {
             int level = 0;
-            Node? cursor = root;
+            Node cursor = root;
 
-            while (cursor!.left != null)
+            while (cursor.left != null)
             {
-                dirs![level] = 1;
-                path![level++] = cursor;
+                dirs[level] = 1;
+                path[level++] = cursor;
                 cursor = cursor.left;
             }
 
@@ -3012,7 +3012,7 @@ namespace C5
                 throw new NoSuchItemException();
             }
 
-            Node cursor = root!, next = Right(cursor!);
+            Node cursor = root, next = Right(cursor);
 
             while (next != null)
             {
@@ -3056,12 +3056,12 @@ namespace C5
         private T DeleteMaxInner()
         {
             int level = 0;
-            Node? cursor = root;
+            Node cursor = root;
 
-            while (cursor!.right != null)
+            while (cursor.right != null)
             {
-                dirs![level] = -1;
-                path![level++] = cursor;
+                dirs[level] = -1;
+                path[level++] = cursor;
                 cursor = cursor.right;
             }
 
@@ -3096,11 +3096,11 @@ namespace C5
                 throw new ViewDisposedException("Snapshot has been disposed");
             }
 
-            Node? cursor = root, bestsofar = null;
+            Node cursor = root, bestsofar = null;
 
             while (cursor != null)
             {
-                int comp = comparer!.Compare(cursor.item, item);
+                int comp = comparer.Compare(cursor.item, item);
 
                 if (comp < 0)
                 {
@@ -3148,11 +3148,11 @@ namespace C5
                 throw new ViewDisposedException("Snapshot has been disposed");
             }
 
-            Node? cursor = root, bestsofar = null;
+            Node cursor = root, bestsofar = null;
 
             while (cursor != null)
             {
-                int comp = comparer!.Compare(cursor.item, item);
+                int comp = comparer.Compare(cursor.item, item);
 
                 if (comp > 0)
                 {
@@ -3201,11 +3201,11 @@ namespace C5
                 throw new ViewDisposedException("Snapshot has been disposed");
             }
 
-            Node? cursor = root, bestsofar = null;
+            Node cursor = root, bestsofar = null;
 
             while (cursor != null)
             {
-                int comp = comparer!.Compare(cursor.item, item);
+                int comp = comparer.Compare(cursor.item, item);
 
                 if (comp < 0)
                 {
@@ -3249,11 +3249,11 @@ namespace C5
                 throw new ViewDisposedException("Snapshot has been disposed");
             }
 
-            Node? cursor = root, bestsofar = null;
+            Node cursor = root, bestsofar = null;
 
             while (cursor != null)
             {
-                int comp = comparer!.Compare(cursor.item, item);
+                int comp = comparer.Compare(cursor.item, item);
 
                 if (comp == 0)
                 {
@@ -3449,11 +3449,11 @@ namespace C5
                 throw new NotSupportedException("Indexing not supported for snapshots");
             }
 
-            int ind = 0; Node? next = root;
+            int ind = 0; Node next = root;
 
             while (next != null)
             {
-                int comp = comparer!.Compare(item, next.item);
+                int comp = comparer.Compare(item, next.item);
                 if (comp < 0)
                 {
                     next = next.left;
@@ -3507,7 +3507,7 @@ namespace C5
                 throw new ViewDisposedException("Snapshot has been disposed");
             }
 
-            Node? cursor = root, lbest = null, rbest = null;
+            Node cursor = root, lbest = null, rbest = null;
             bool res = false;
 
             while (cursor != null)
@@ -3583,7 +3583,7 @@ namespace C5
 
             if (highIsValid = (rbest != null))
             {
-                high = rbest!.item;
+                high = rbest.item;
             }
             else
             {
@@ -3592,7 +3592,7 @@ namespace C5
 
             if (lowIsValid = (lbest != null))
             {
-                low = lbest!.item;
+                low = lbest.item;
             }
             else
             {
@@ -3632,7 +3632,7 @@ namespace C5
                 throw new ViewDisposedException("Snapshot has been disposed");
             }
 
-            if (comparer!.Compare(bot, top) >= 0)
+            if (comparer.Compare(bot, top) >= 0)
             {
                 return 0;
             }
@@ -3678,7 +3678,7 @@ namespace C5
             }
 
             StackCheck();
-            CircularQueue<T>? wasRemoved = (ActiveEvents & EventType.Removed) != 0 ? new CircularQueue<T>() : null;
+            CircularQueue<T> wasRemoved = (ActiveEvents & EventType.Removed) != 0 ? new CircularQueue<T>() : null;
 
             for (int i = 0; i < count; i++)
             {
@@ -3720,7 +3720,7 @@ namespace C5
                 return;
             }
 
-            CircularQueue<T>? wasRemoved = (ActiveEvents & EventType.Removed) != 0 ? new CircularQueue<T>() : null;
+            CircularQueue<T> wasRemoved = (ActiveEvents & EventType.Removed) != 0 ? new CircularQueue<T>() : null;
             for (int i = 0; i < count; i++)
             {
                 T item = Predecessor(hi);
@@ -3762,7 +3762,7 @@ namespace C5
             }
 
             StackCheck();
-            CircularQueue<T>? wasRemoved = (ActiveEvents & EventType.Removed) != 0 ? new CircularQueue<T>() : null;
+            CircularQueue<T> wasRemoved = (ActiveEvents & EventType.Removed) != 0 ? new CircularQueue<T>() : null;
 
             for (int i = 0; i < count; i++)
             {
@@ -3794,8 +3794,8 @@ namespace C5
                 return -1;
             }
 
-            SnapRef? lastLiveSnapRef = snapList.Prev;
-            object? _snapshot = null;
+            SnapRef lastLiveSnapRef = snapList.Prev;
+            object _snapshot = null;
             while (lastLiveSnapRef != null && (_snapshot = lastLiveSnapRef.Tree.Target) == null)
             {
                 lastLiveSnapRef = lastLiveSnapRef.Prev;
@@ -3811,18 +3811,18 @@ namespace C5
                 snapList.Prev = lastLiveSnapRef;
                 lastLiveSnapRef.Next = snapList;
             }
-            return ((TreeBag<T>)_snapshot!)!.generation;
+            return ((TreeBag<T>)_snapshot).generation;
         }
 
         [Serializable]
         private class SnapRef
         {
-            public SnapRef? Prev, Next;
+            public SnapRef Prev, Next;
             public WeakReference Tree;
             public SnapRef(TreeBag<T> tree) { Tree = new WeakReference(tree); }
             public void Dispose()
             {
-                Next!.Prev = Prev;
+                Next.Prev = Prev;
                 if (Prev != null)
                 {
                     Prev.Next = Next;
@@ -3852,14 +3852,14 @@ namespace C5
 
                     if (isSnapShot)
                     {
-                        snapList!.Dispose();
+                        snapList.Dispose();
                         SnapDispose();
                     }
                     else
                     {
                         if (snapList != null)
                         {
-                            SnapRef someSnapRef = snapList.Prev!;
+                            SnapRef someSnapRef = snapList.Prev;
                             while (someSnapRef != null)
                             {
                                 if (someSnapRef.Tree.Target is TreeBag<T> lastsnap)
@@ -3867,7 +3867,7 @@ namespace C5
                                     lastsnap.SnapDispose();
                                 }
 
-                                someSnapRef = someSnapRef.Prev!;
+                                someSnapRef = someSnapRef.Prev;
                             }
                         }
                         snapList = null;
@@ -3924,7 +3924,7 @@ namespace C5
                 snapList = new SnapRef(this);
             }
 
-            SnapRef? lastLiveSnapRef = snapList.Prev;
+            SnapRef lastLiveSnapRef = snapList.Prev;
 
             newSnapRef.Prev = lastLiveSnapRef;
             if (lastLiveSnapRef != null)
@@ -3987,18 +3987,18 @@ namespace C5
                 #region Private Fields
                 private bool valid = false, ready = true;
 
-                private SCG.IComparer<T>? comparer;
+                private SCG.IComparer<T> comparer;
 
                 private T current;
                 private int togo;
 
-                private Node? cursor;
+                private Node cursor;
 
-                private Node[]? path; // stack of nodes
+                private Node[] path; // stack of nodes
 
                 private int level = 0;
 
-                private Range? range;
+                private Range range;
 
                 private readonly bool forwards;
 
@@ -4016,7 +4016,7 @@ namespace C5
                     }
                     else
                     {
-                        cursor.left = range.basis.root!;
+                        cursor.left = range.basis.root;
                     }
 
                     range.basis.ModifyCheck(range.stamp);
@@ -4024,7 +4024,7 @@ namespace C5
 
                 private int Compare(T i1, T i2)
                 {
-                    return comparer!.Compare(i1, i2);
+                    return comparer.Compare(i1, i2);
                 }
 
                 /// <summary>
@@ -4060,7 +4060,7 @@ namespace C5
                 /// <returns>True if enumerator is valid now</returns>
                 public bool MoveNext()
                 {
-                    range!.basis.ModifyCheck(range.stamp);
+                    range.basis.ModifyCheck(range.stamp);
                     if (!ready)
                     {
                         return false;
@@ -4075,14 +4075,14 @@ namespace C5
                     {
                         if (!valid && range.haslowend)
                         {
-                            cursor = cursor!.right!;
+                            cursor = cursor.right;
                             while (cursor != null)
                             {
                                 int comp = Compare(cursor.item, range.lowend);
 
                                 if (comp > 0)
                                 {
-                                    path![level++] = cursor;
+                                    path[level++] = cursor;
                                     cursor = range.basis.Left(cursor);
 
                                 }
@@ -4093,7 +4093,7 @@ namespace C5
                                 }
                                 else
                                 {
-                                    path![level] = cursor;
+                                    path[level] = cursor;
                                     break;
                                 }
                             }
@@ -4106,13 +4106,13 @@ namespace C5
                                 }
                                 else
                                 {
-                                    cursor = path![--level];
+                                    cursor = path[--level];
                                 }
                             }
                         }
-                        else if (range.basis.Right(cursor!) != null)
+                        else if (range.basis.Right(cursor) != null)
                         {
-                            path![level] = cursor = range.basis.Right(cursor!);
+                            path[level] = cursor = range.basis.Right(cursor);
 
                             Node next = range.basis.Left(cursor);
 
@@ -4129,7 +4129,7 @@ namespace C5
                         }
                         else
                         {
-                            cursor = path![--level];
+                            cursor = path[--level];
                         }
 
                         current = cursor.item;
@@ -4146,14 +4146,14 @@ namespace C5
                     {
                         if (!valid && range.hashighend)
                         {
-                            cursor = cursor!.left;
+                            cursor = cursor.left;
                             while (cursor != null)
                             {
                                 int comp = Compare(cursor.item, range.highend);
 
                                 if (comp < 0)
                                 {
-                                    path![level++] = cursor;
+                                    path[level++] = cursor;
                                     cursor = range.basis.Right(cursor);
 
                                 }
@@ -4172,13 +4172,13 @@ namespace C5
                                 }
                                 else
                                 {
-                                    cursor = path![--level];
+                                    cursor = path[--level];
                                 }
                             }
                         }
-                        else if (range.basis.Left(cursor!) != null)
+                        else if (range.basis.Left(cursor) != null)
                         {
-                            path![level] = cursor = range.basis.Left(cursor!);
+                            path[level] = cursor = range.basis.Left(cursor);
 
                             Node next = range.basis.Right(cursor);
 
@@ -4195,7 +4195,7 @@ namespace C5
                         }
                         else
                         {
-                            cursor = path![--level];
+                            cursor = path[--level];
                         }
 
                         current = cursor.item;
@@ -4222,7 +4222,7 @@ namespace C5
 
                 #region IEnumerator Members
 
-                object System.Collections.IEnumerator.Current => Current!;
+                object System.Collections.IEnumerator.Current => Current;
 
                 bool System.Collections.IEnumerator.MoveNext()
                 {
@@ -4314,7 +4314,7 @@ namespace C5
             }
             else
             {
-                MiniDump(n.right!, space + "  ");
+                MiniDump(n.right, space + "  ");
                 Logger.Log(string.Format("{0} {4} (size={1}, items={8}, h={2}, gen={3}, id={6}){7}", space + n.item,
 
  n.size,
@@ -4349,7 +4349,7 @@ namespace C5
         {
             Logger.Log(string.Format(">>>>>>>>>>>>>>>>>>> dump {0} (count={1}, blackdepth={2}, depth={3}, gen={4}, uniqueCount={5})", msg, size, blackdepth,
             0, generation, UniqueCount));
-            MiniDump(root!, "");
+            MiniDump(root, "");
             CheckInner(); Logger.Log("<<<<<<<<<<<<<<<<<<<");
         }
 
@@ -4363,7 +4363,7 @@ namespace C5
         {
             Logger.Log(string.Format(">>>>>>>>>>>>>>>>>>> dump {0} (count={1}, blackdepth={2}, depth={3}, gen={4}, uniqueCount={5})", msg, size, blackdepth,
             0, generation, UniqueCount));
-            MiniDump(root!, ""); Logger.Log(err);
+            MiniDump(root, ""); Logger.Log(err);
             Logger.Log("<<<<<<<<<<<<<<<<<<<");
         }
 
@@ -4407,13 +4407,13 @@ namespace C5
             if (n.left != null)
             {
                 res = RbMiniCheck(n.left, n.red, out min, out otherext, out lbh) && res;
-                res = Massert(comparer!.Compare(n.item, otherext) > 0, n, "Value not > all left children") && res;
+                res = Massert(comparer.Compare(n.item, otherext) > 0, n, "Value not > all left children") && res;
             }
 
             if (n.right != null)
             {
                 res = RbMiniCheck(n.right, n.red, out otherext, out max, out rbh) && res;
-                res = Massert(comparer!.Compare(n.item, otherext) < 0, n, "Value not < all right children") && res;
+                res = Massert(comparer.Compare(n.item, otherext) < 0, n, "Value not < all right children") && res;
             }
 
             res = Massert(rbh == lbh, n, "Different blackheights of children") && res;
@@ -4430,19 +4430,19 @@ namespace C5
             int lsz = 0, rsz = 0;
             T otherext;
 
-            Node child = (n.lastgeneration >= generation && n.leftnode) ? n.oldref! : n.left;
+            Node child = n.lastgeneration >= generation && n.leftnode ? n.oldref : n.left;
             if (child != null)
             {
                 res = RbMiniSnapCheck(child, out lsz, out min, out otherext) && res;
-                res = Massert(comparer!.Compare(n.item, otherext) > 0, n, "Value not > all left children") && res;
+                res = Massert(comparer.Compare(n.item, otherext) > 0, n, "Value not > all left children") && res;
             }
 
 
-            child = ((n.lastgeneration >= generation && !n.leftnode) ? n.oldref : n.right)!;
+            child = (n.lastgeneration >= generation && !n.leftnode) ? n.oldref : n.right;
             if (child != null)
             {
                 res = RbMiniSnapCheck(child, out rsz, out otherext, out max) && res;
-                res = Massert(comparer!.Compare(n.item, otherext) < 0, n, "Value not < all right children") && res;
+                res = Massert(comparer.Compare(n.item, otherext) < 0, n, "Value not < all right children") && res;
             }
 
             size = n.items + lsz + rsz;

@@ -72,7 +72,7 @@ namespace C5
         private int bitsc;
         private readonly int origbits;
         private int lastchosen;
-        private Bucket?[] table;
+        private Bucket[] table;
         private readonly double fillfactor = 0.66;
         private int resizethreshhold;
 
@@ -99,9 +99,9 @@ namespace C5
 
             internal int hashval; //Cache!
 
-            internal Bucket? overflow;
+            internal Bucket overflow;
 
-            internal Bucket(T item, int hashval, Bucket? overflow)
+            internal Bucket(T item, int hashval, Bucket overflow)
             {
                 this.item = item;
                 this.hashval = hashval;
@@ -150,7 +150,7 @@ namespace C5
 
             for (int i = 0, s = table.Length; i < s; i++)
             {
-                Bucket? b = table[i];
+                Bucket b = table[i];
 
                 while (b != null)
                 {
@@ -180,8 +180,8 @@ namespace C5
 
             int hashval = GetHashCode(item);
             int i = Hv2i(hashval);
-            Bucket? b = table[i];
-            Bucket? bold = null;
+            Bucket b = table[i];
+            Bucket bold = null;
 
             if (b != null)
             {
@@ -212,7 +212,7 @@ namespace C5
                     goto notfound;
                 }
 
-                bold!.overflow = new Bucket(item, hashval, null);
+                bold.overflow = new Bucket(item, hashval, null);
             }
             else
             {
@@ -254,7 +254,7 @@ namespace C5
 
             int hashval = GetHashCode(item);
             int index = Hv2i(hashval);
-            Bucket? b = table[index], bold;
+            Bucket b = table[index], bold;
 
             if (b == null)
             {
@@ -554,7 +554,7 @@ namespace C5
                 return;
             }
 
-            CircularQueue<T>? wasRemoved = null;
+            CircularQueue<T> wasRemoved = null;
             if ((ActiveEvents & EventType.Removed) != 0)
             {
                 wasRemoved = new CircularQueue<T>();
@@ -618,7 +618,7 @@ namespace C5
 
             for (int i = 0; i < table.Length; i++)
             {
-                Bucket? b = table[i];
+                Bucket b = table[i];
                 while (b != null)
                 {
                     res[index++] = b.item;
@@ -679,7 +679,7 @@ namespace C5
 
             do { if (++lastchosen >= len) { lastchosen = 0; } } while (table[lastchosen] == null);
 
-            return (table[lastchosen])!.item;
+            return table[lastchosen].item;
         }
 
         /// <summary>
@@ -692,7 +692,7 @@ namespace C5
             int mystamp = stamp;
             int len = table.Length;
 
-            Bucket? b = null;
+            Bucket b = null;
 
             while (true)
             {
@@ -712,7 +712,7 @@ namespace C5
                     } while (table[index] == null);
 
                     b = table[index];
-                    yield return b!.item;
+                    yield return b.item;
                 }
                 else
                 {
@@ -770,7 +770,7 @@ namespace C5
             UpdateCheck();
             bool wasChanged = false;
             bool raiseAdded = (ActiveEvents & EventType.Added) != 0;
-            CircularQueue<T>? wasAdded = raiseAdded ? new CircularQueue<T>() : null;
+            CircularQueue<T> wasAdded = raiseAdded ? new CircularQueue<T>() : null;
             foreach (T item in items)
             {
                 T jtem = item;
@@ -840,7 +840,7 @@ namespace C5
             for (int i = 0, s = table.Length; i < s; i++)
             {
                 int level = 0;
-                Bucket? b = table[i];
+                Bucket b = table[i];
                 while (b != null)
                 {
                     if (i != Hv2i(b.hashval))
@@ -875,7 +875,7 @@ namespace C5
             for (int i = 0, s = table.Length; i < s; i++)
             {
                 int count = 0;
-                Bucket? b = table[i];
+                Bucket b = table[i];
 
                 while (b != null)
                 {

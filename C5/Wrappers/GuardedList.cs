@@ -17,7 +17,7 @@ namespace C5
         #region Fields
 
         private readonly IList<T> innerlist;
-        private readonly GuardedList<T>? underlying;
+        private readonly GuardedList<T> underlying;
         private readonly bool slidableView = false;
 
         #endregion
@@ -41,7 +41,7 @@ namespace C5
             }
         }
 
-        private GuardedList(IList<T> list, GuardedList<T>? underlying, bool slidableView)
+        private GuardedList(IList<T> list, GuardedList<T> underlying, bool slidableView)
             : base(list)
         {
             innerlist = list; this.underlying = underlying; this.slidableView = slidableView;
@@ -217,9 +217,9 @@ namespace C5
         /// <param name="start"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public IList<T>? View(int start, int count)
+        public IList<T> View(int start, int count)
         {
-            IList<T>? view = innerlist.View(start, count);
+            IList<T> view = innerlist.View(start, count);
             return view == null ? null : new GuardedList<T>(view, underlying ?? this, true);
         }
 
@@ -228,9 +228,9 @@ namespace C5
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public IList<T>? ViewOf(T item)
+        public IList<T> ViewOf(T item)
         {
-            IList<T>? view = innerlist.ViewOf(item);
+            IList<T> view = innerlist.ViewOf(item);
             return view == null ? null : new GuardedList<T>(view, underlying ?? this, true);
         }
 
@@ -239,9 +239,9 @@ namespace C5
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public IList<T>? LastViewOf(T item)
+        public IList<T> LastViewOf(T item)
         {
-            IList<T>? view = innerlist.LastViewOf(item);
+            IList<T> view = innerlist.LastViewOf(item);
             return view == null ? null : new GuardedList<T>(view, underlying ?? this, true);
         }
 
@@ -249,7 +249,7 @@ namespace C5
         /// <summary>
         /// </summary>
         /// <value>The wrapped underlying list of the wrapped view </value>
-        public IList<T>? Underlying => underlying;
+        public IList<T> Underlying => underlying;
 
 
         /// <summary>
@@ -343,14 +343,14 @@ namespace C5
         /// </summary>
         /// <param name="otherView"></param>
         /// <returns></returns>
-        public IList<T>? Span(IList<T> otherView)
+        public IList<T> Span(IList<T> otherView)
         {
             if (!(otherView is GuardedList<T> otherGuardedList))
             {
                 throw new IncompatibleViewException();
             }
 
-            IList<T>? span = innerlist.Span(otherGuardedList.innerlist);
+            IList<T> span = innerlist.Span(otherGuardedList.innerlist);
             if (span == null)
             {
                 return null;
@@ -559,7 +559,7 @@ namespace C5
 
         Object System.Collections.IList.this[int index]
         {
-            get => this[index]!;
+            get => this[index];
             set => throw new ReadOnlyCollectionException("Collection cannot be modified through this guard object");
         }
 

@@ -14,12 +14,12 @@ namespace C5
     [Serializable]
     internal class WeakViewList<V> where V : class
     {
-        private Node? start;
+        private Node start;
 
         [Serializable]
         internal class Node
         {
-            internal WeakReference weakview; internal Node? prev; internal Node next;
+            internal WeakReference weakview; internal Node prev; internal Node next;
             internal Node(V view) { weakview = new WeakReference(view); }
         }
         internal Node Add(V view)
@@ -33,14 +33,14 @@ namespace C5
         {
             if (n == start)
             {
-                start = start!.next; if (start != null)
+                start = start.next; if (start != null)
                 {
                     start.prev = null;
                 }
             }
             else
             {
-                n.prev!.next = n.next; if (n.next != null)
+                n.prev.next = n.next; if (n.next != null)
                 {
                     n.next.prev = n.prev;
                 }
@@ -53,7 +53,7 @@ namespace C5
         /// <returns></returns>
         public SCG.IEnumerator<V> GetEnumerator()
         {
-            Node n = start!;
+            Node n = start;
             while (n != null)
             {
                 //V view = n.weakview.Target as V; //This provokes a bug in the beta1 verifyer

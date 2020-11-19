@@ -290,7 +290,7 @@ namespace C5
 #warning Improve if items is a counting bag
             UpdateCheck();
             bool mustRaise = (ActiveEvents & (EventType.Changed | EventType.Removed)) != 0;
-            RaiseForRemoveAllHandler? raiseHandler = mustRaise ? new RaiseForRemoveAllHandler(this) : null;
+            RaiseForRemoveAllHandler raiseHandler = mustRaise ? new RaiseForRemoveAllHandler(this) : null;
             foreach (T item in items)
             {
                 SCG.KeyValuePair<T, int> p = new SCG.KeyValuePair<T, int>(item, 0);
@@ -384,7 +384,7 @@ namespace C5
                 return;
             }
 
-            CircularQueue<T>? wasRemoved = null;
+            CircularQueue<T> wasRemoved = null;
             if ((ActiveEvents & EventType.Removed) != 0)
             {
                 wasRemoved = new CircularQueue<T>();
@@ -617,7 +617,7 @@ namespace C5
             UpdateCheck();
 #warning We could easily raise bag events
             bool mustRaiseAdded = (ActiveEvents & EventType.Added) != 0;
-            CircularQueue<T>? wasAdded = mustRaiseAdded ? new CircularQueue<T>() : null;
+            CircularQueue<T> wasAdded = mustRaiseAdded ? new CircularQueue<T>() : null;
             bool wasChanged = false;
             foreach (T item in items)
             {

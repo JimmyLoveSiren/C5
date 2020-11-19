@@ -18,7 +18,7 @@ namespace C5
         private readonly System.Collections.Generic.IEqualityComparer<K> keyequalityComparer;
 
         #region Events
-        private ProxyEventBlock<System.Collections.Generic.KeyValuePair<K, V>>? eventBlock;
+        private ProxyEventBlock<System.Collections.Generic.KeyValuePair<K, V>> eventBlock;
 
         /// <summary>
         /// The change event. Will be raised for every change operation on the collection.
@@ -445,7 +445,7 @@ namespace C5
                 }
                 else
                 {
-                    throw new NoSuchItemException("Key '" + key!.ToString() + "' not present in Dictionary");
+                    throw new NoSuchItemException("Key '" + key.ToString() + "' not present in Dictionary");
                 }
             }
             set => pairs.UpdateOrAdd(new System.Collections.Generic.KeyValuePair<K, V>(key, value));
@@ -513,7 +513,7 @@ namespace C5
         /// <param name="rest"></param>
         /// <param name="formatProvider"></param>
         /// <returns></returns>
-        public override bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider? formatProvider)
+        public override bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider formatProvider)
         {
             return Showing.ShowDictionary<K, V>(this, stringbuilder, ref rest, formatProvider);
         }

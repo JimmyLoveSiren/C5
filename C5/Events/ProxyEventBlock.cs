@@ -17,7 +17,7 @@ namespace C5
 
         private event CollectionChangedHandler<T> CollectionChangedInner;
 
-        private CollectionChangedHandler<T>? collectionChangedProxy = null;
+        private CollectionChangedHandler<T> collectionChangedProxy = null;
         internal event CollectionChangedHandler<T> CollectionChanged
         {
             add
@@ -45,7 +45,7 @@ namespace C5
 
         private event CollectionClearedHandler<T> CollectionClearedInner;
 
-        private CollectionClearedHandler<T>? collectionClearedProxy = null;
+        private CollectionClearedHandler<T> collectionClearedProxy = null;
         internal event CollectionClearedHandler<T> CollectionCleared
         {
             add
@@ -73,7 +73,7 @@ namespace C5
 
         private event ItemsAddedHandler<T> ItemsAddedInner;
 
-        private ItemsAddedHandler<T>? itemsAddedProxy = null;
+        private ItemsAddedHandler<T> itemsAddedProxy = null;
         internal event ItemsAddedHandler<T> ItemsAdded
         {
             add
@@ -101,7 +101,7 @@ namespace C5
 
         private event ItemInsertedHandler<T> ItemInsertedInner;
 
-        private ItemInsertedHandler<T>? itemInsertedProxy = null;
+        private ItemInsertedHandler<T> itemInsertedProxy = null;
         internal event ItemInsertedHandler<T> ItemInserted
         {
             add
@@ -127,9 +127,9 @@ namespace C5
             }
         }
 
-        private event ItemsRemovedHandler<T>? ItemsRemovedInner = null;
+        private event ItemsRemovedHandler<T> ItemsRemovedInner = null;
 
-        private ItemsRemovedHandler<T>? itemsRemovedProxy = null;
+        private ItemsRemovedHandler<T> itemsRemovedProxy = null;
         internal event ItemsRemovedHandler<T> ItemsRemoved
         {
             add
@@ -157,7 +157,7 @@ namespace C5
 
         private event ItemRemovedAtHandler<T> ItemRemovedAtInner;
 
-        private ItemRemovedAtHandler<T>? itemRemovedAtProxy = null;
+        private ItemRemovedAtHandler<T> itemRemovedAtProxy = null;
         internal event ItemRemovedAtHandler<T> ItemRemovedAt
         {
             add

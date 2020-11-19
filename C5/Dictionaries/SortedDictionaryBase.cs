@@ -42,7 +42,7 @@ namespace C5
         /// 
         /// </summary>
         /// <value></value>
-        public new ISorted<K>? Keys => new SortedKeysCollection(this, sortedpairs, keycomparer, EqualityComparer);
+        public new ISorted<K> Keys => new SortedKeysCollection(this, sortedpairs, keycomparer, EqualityComparer);
 
         /// <summary>
         /// Find the entry in the dictionary whose key is the
@@ -532,7 +532,7 @@ namespace C5
         /// <param name="rest"></param>
         /// <param name="formatProvider"></param>
         /// <returns></returns>
-        public override bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider? formatProvider)
+        public override bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider formatProvider)
         {
             return Showing.ShowDictionary<K, V>(this, stringbuilder, ref rest, formatProvider);
         }

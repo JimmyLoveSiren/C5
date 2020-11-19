@@ -144,16 +144,18 @@ namespace C5
             {
                 if (collection1 is ISorted<T> stit && collection2 is ISorted<T> stat && stit.Comparer == stat.Comparer)
                 {
-                    using System.Collections.Generic.IEnumerator<T> dat = collection2.GetEnumerator(), dit = collection1.GetEnumerator();
-                    while (dit.MoveNext())
+                    using (System.Collections.Generic.IEnumerator<T> dat = collection2.GetEnumerator(), dit = collection1.GetEnumerator())
                     {
-                        dat.MoveNext();
-                        if (!itemequalityComparer.Equals(dit.Current, dat.Current))
+                        while (dit.MoveNext())
                         {
-                            return false;
+                            dat.MoveNext();
+                            if (!itemequalityComparer.Equals(dit.Current, dat.Current))
+                            {
+                                return false;
+                            }
                         }
+                        return true;
                     }
-                    return true;
                 }
             }
 

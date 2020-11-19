@@ -9,7 +9,7 @@ namespace C5
     public abstract class CollectionValueBase<T> : EnumerableBase<T>, ICollectionValue<T>, IShowable
     {
         #region Event handling
-        private EventBlock<T>? eventBlock;
+        private EventBlock<T> eventBlock;
         /// <summary>
         /// 
         /// </summary>
@@ -353,7 +353,7 @@ namespace C5
         /// 
         /// </summary>
         /// <param name="wasRemoved"></param>
-        protected virtual void RaiseForRemoveAll(ICollectionValue<T>? wasRemoved)
+        protected virtual void RaiseForRemoveAll(ICollectionValue<T> wasRemoved)
         {
             if ((ActiveEvents & EventType.Removed) != 0)
             {
@@ -379,7 +379,7 @@ namespace C5
         protected class RaiseForRemoveAllHandler
         {
             private readonly CollectionValueBase<T> collection;
-            private CircularQueue<T>? wasRemoved = null;
+            private CircularQueue<T> wasRemoved = null;
             private bool wasChanged = false;
 
             /// <summary>
@@ -624,9 +624,9 @@ namespace C5
         /// <param name="rest"></param>
         /// <param name="formatProvider"></param>
         /// <returns></returns>
-        public virtual bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider? formatProvider)
+        public virtual bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider formatProvider)
         {
-            return Showing.ShowCollectionValue<T>(this, stringbuilder, ref rest, formatProvider!);
+            return Showing.ShowCollectionValue<T>(this, stringbuilder, ref rest, formatProvider);
         }
         #endregion
 
@@ -638,7 +638,7 @@ namespace C5
         /// <param name="format"></param>
         /// <param name="formatProvider"></param>
         /// <returns></returns>
-        public virtual string ToString(string? format, IFormatProvider? formatProvider)
+        public virtual string ToString(string format, IFormatProvider formatProvider)
         {
             return Showing.ShowString(this, format, formatProvider);
         }

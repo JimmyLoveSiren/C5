@@ -23,7 +23,7 @@ namespace C5
         /// <value></value>
         public virtual EventType ActiveEvents => collectionvalue.ActiveEvents;
 
-        private ProxyEventBlock<T>? eventBlock;
+        private ProxyEventBlock<T> eventBlock;
         /// <summary>
         /// The change event. Will be raised for every change operation on the collection.
         /// </summary>
@@ -228,7 +228,7 @@ namespace C5
         /// <param name="formatProvider"></param>
         /// <param name="rest"></param>
         /// <returns></returns>
-        public bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider? formatProvider)
+        public bool Show(System.Text.StringBuilder stringbuilder, ref int rest, IFormatProvider formatProvider)
         {
             return collectionvalue.Show(stringbuilder, ref rest, formatProvider);
         }

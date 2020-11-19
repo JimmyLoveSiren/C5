@@ -60,7 +60,7 @@ namespace C5
 
         #region IEnumerator Members
 
-        object System.Collections.IEnumerator.Current => enumerator.Current!;
+        object System.Collections.IEnumerator.Current => enumerator.Current;
 
         void System.Collections.IEnumerator.Reset()
         {

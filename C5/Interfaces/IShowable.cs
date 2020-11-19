@@ -18,6 +18,6 @@ namespace C5
         /// <param name="rest"></param>
         /// <param name="formatProvider"></param>
         /// <returns>True if the appended formatted string was complete (not truncated).</returns>
-        bool Show(StringBuilder stringbuilder, ref int rest, IFormatProvider? formatProvider);
+        bool Show(StringBuilder stringbuilder, ref int rest, IFormatProvider formatProvider);
     }
 }

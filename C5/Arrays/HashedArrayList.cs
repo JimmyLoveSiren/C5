@@ -30,9 +30,9 @@ namespace C5
         /// <summary>
         /// The underlying list if we are a view, null else.
         /// </summary>
-        private HashedArrayList<T>? underlying;
-        private WeakViewList<HashedArrayList<T>>? views;
-        private WeakViewList<HashedArrayList<T>>.Node? myWeakReference;
+        private HashedArrayList<T> underlying;
+        private WeakViewList<HashedArrayList<T>> views;
+        private WeakViewList<HashedArrayList<T>>.Node myWeakReference;
 
         /// <summary>
         /// The size of the underlying list.
@@ -564,7 +564,7 @@ namespace C5
         /// </summary>
         private struct Position
         {
-            public HashedArrayList<T>? View { get; }
+            public HashedArrayList<T> View { get; }
 
             public int Index { get; }
 
@@ -586,8 +586,8 @@ namespace C5
         /// </summary>
         private struct ViewHandler
         {
-            private readonly HashedArrayList<Position>? leftEnds;
-            private readonly HashedArrayList<Position>? rightEnds;
+            private readonly HashedArrayList<Position> leftEnds;
+            private readonly HashedArrayList<Position> rightEnds;
             private int leftEndIndex, rightEndIndex;
             internal readonly int viewCount;
             internal ViewHandler(HashedArrayList<T> list)
@@ -630,16 +630,16 @@ namespace C5
                 if (viewCount > 0)
                 {
                     Position endpoint;
-                    while (leftEndIndex < viewCount && (endpoint = leftEnds![leftEndIndex]).Index <= realindex)
+                    while (leftEndIndex < viewCount && (endpoint = leftEnds[leftEndIndex]).Index <= realindex)
                     {
-                        HashedArrayList<T> view = endpoint.View!;
+                        HashedArrayList<T> view = endpoint.View;
                         view.offsetField -= removed;
                         view.size += removed;
                         leftEndIndex++;
                     }
-                    while (rightEndIndex < viewCount && (endpoint = rightEnds![rightEndIndex]).Index < realindex)
+                    while (rightEndIndex < viewCount && (endpoint = rightEnds[rightEndIndex]).Index < realindex)
                     {
-                        endpoint.View!.size -= removed;
+                        endpoint.View.size -= removed;
                         rightEndIndex++;
                     }
                 }
@@ -649,16 +649,16 @@ namespace C5
                 if (viewCount > 0)
                 {
                     Position endpoint;
-                    while (leftEndIndex < viewCount && (endpoint = leftEnds![leftEndIndex]).Index <= realindex)
+                    while (leftEndIndex < viewCount && (endpoint = leftEnds[leftEndIndex]).Index <= realindex)
                     {
-                        HashedArrayList<T> view = endpoint.View!;
-                        view!.offsetField = view.Offset - removed;
+                        HashedArrayList<T> view = endpoint.View;
+                        view.offsetField = view.Offset - removed;
                         view.size += removed;
                         leftEndIndex++;
                     }
-                    while (rightEndIndex < viewCount && (endpoint = rightEnds![rightEndIndex]).Index < realindex)
+                    while (rightEndIndex < viewCount && (endpoint = rightEnds[rightEndIndex]).Index < realindex)
                     {
-                        endpoint.View!.size -= removed;
+                        endpoint.View.size -= removed;
                         rightEndIndex++;
                     }
                 }
@@ -1135,7 +1135,7 @@ namespace C5
         /// <param name="start">The index in this list of the start of the view.</param>
         /// <param name="count">The size of the view.</param>
         /// <returns>The new list view.</returns>
-        public virtual IList<T>? View(int start, int count)
+        public virtual IList<T> View(int start, int count)
         {
             ValidityCheck();
             CheckRange(start, count);
@@ -1160,7 +1160,7 @@ namespace C5
         /// </summary>
         /// <param name="item">The item to find.</param>
         /// <returns>The new list view.</returns>
-        public virtual IList<T>? ViewOf(T item)
+        public virtual IList<T> ViewOf(T item)
         {
             int index = IndexOfInner(item);
             if (index < 0)
@@ -1178,7 +1178,7 @@ namespace C5
         /// </summary>
         /// <param name="item">The item to find.</param>
         /// <returns>The new list view.</returns>
-        public virtual IList<T>? LastViewOf(T item)
+        public virtual IList<T> LastViewOf(T item)
         {
             int index = LastIndexOfInner(item);
             if (index < 0)
@@ -1193,7 +1193,7 @@ namespace C5
         /// Null if this list is not a view.
         /// </summary>
         /// <value>Underlying list for view.</value>
-        public virtual IList<T>? Underlying => underlying;
+        public virtual IList<T> Underlying => underlying;
 
 
         /// <summary>
@@ -1291,7 +1291,7 @@ namespace C5
         /// <param name="otherView"></param>
         /// <exception cref="IncompatibleViewException">If otherView does not have the same underlying list as this</exception>
         /// <returns></returns>
-        public virtual IList<T>? Span(IList<T> otherView)
+        public virtual IList<T> Span(IList<T> otherView)
         {
             if ((otherView == null) || ((otherView.Underlying ?? otherView) != (underlying ?? this)))
             {
@@ -2320,7 +2320,7 @@ namespace C5
                     isValid = false;
                     if (!disposingUnderlying && views != null)
                     {
-                        views.Remove(myWeakReference!);
+                        views.Remove(myWeakReference);
                     }
 
                     underlying = null;
@@ -2420,7 +2420,7 @@ namespace C5
 
         Object System.Collections.IList.this[int index]
         {
-            get => this[index]!;
+            get => this[index];
             set => this[index] = (T)value;
         }
 
